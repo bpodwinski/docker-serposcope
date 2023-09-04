@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-LABEL maintainer="Artisan Webmaster contact@artisanwebmaster.com"
+LABEL maintainer="Benoît Podwinski contact@benoitpodwinski.com"
 
 ARG SERPOSCOPE_VER=3.2
 
