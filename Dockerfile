@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 LABEL maintainer="Benoît Podwinski contact@benoitpodwinski.com"
 
-ARG SERPOSCOPE_VER=3.2
+ARG SERPOSCOPE_VER=3.3
 
 RUN apt-get update && \
     apt-get install -y wget && \
