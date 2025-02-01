@@ -1,4 +1,7 @@
-FROM ubuntu:latest
+ARG BASE_IMAGE=""
+ARG ARCH=""
+FROM ${BASE_IMAGE} AS base
+
 LABEL maintainer="Benoît Podwinski contact@benoitpodwinski.com"
 
 ARG SERPOSCOPE_VER=3.5
@@ -12,6 +15,8 @@ RUN ARCH=$(dpkg --print-architecture) && \
         wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_amd64.deb -O serposcope.deb; \
     elif [ "$ARCH" = "arm64" ]; then \
         wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_arm64.deb -O serposcope.deb; \
+    elif [ "$ARCH" = "armhf" ]; then \
+        wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_armhf.deb -O serposcope.deb; \
     else \
         echo "Unsupported architecture: $ARCH" && exit 1; \
     fi && \
