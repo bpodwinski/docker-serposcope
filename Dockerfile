@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="latest"
+ARG BASE_IMAGE=ubuntu:24.04
 FROM ${BASE_IMAGE} AS base
 
 LABEL maintainer="Benoît Podwinski contact@benoitpodwinski.com"
@@ -29,15 +29,14 @@ RUN ARCH=$(dpkg --print-architecture) && \
 
 COPY application.conf /usr/share/serposcope/
 COPY entrypoint.sh /entrypoint.sh
-
-RUN groupadd -r serposcope && \
-    useradd -r -g serposcope serposcope && \
-    chmod +x /entrypoint.sh
-
-WORKDIR /usr/share/serposcope/
+RUN chmod +x /entrypoint.sh
 
 RUN if ! getent group serposcope > /dev/null; then groupadd -r serposcope; fi && \
     if ! id -u serposcope > /dev/null 2>&1; then useradd -r -g serposcope serposcope; fi
+
+WORKDIR /usr/share/serposcope/
+
+RUN mkdir -p ./db && chown -R serposcope:serposcope ./db
 
 VOLUME ["/usr/share/serposcope/db"]
 EXPOSE 6333
