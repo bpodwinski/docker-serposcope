@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=""
-ARG ARCH=""
+ARG BASE_IMAGE="latest"
 FROM ${BASE_IMAGE} AS base
 
 LABEL maintainer="Benoît Podwinski contact@benoitpodwinski.com"
@@ -9,6 +8,12 @@ ARG SERPOSCOPE_VER=3.5
 RUN apt-get update && \
     apt-get install -y wget && \
     rm -rf /var/lib/apt/lists/*
+
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "armhf" ]; then \
+        apt-get update && apt-get install -y qemu-user-static && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
 
 RUN ARCH=$(dpkg --print-architecture) && \
     if [ "$ARCH" = "amd64" ]; then \
@@ -31,7 +36,8 @@ RUN groupadd -r serposcope && \
 
 WORKDIR /usr/share/serposcope/
 
-RUN mkdir -p ./db && chown -R serposcope:serposcope ./db
+RUN if ! getent group serposcope > /dev/null; then groupadd -r serposcope; fi && \
+    if ! id -u serposcope > /dev/null 2>&1; then useradd -r -g serposcope serposcope; fi
 
 VOLUME ["/usr/share/serposcope/db"]
 EXPOSE 6333
