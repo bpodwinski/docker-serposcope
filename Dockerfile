@@ -7,9 +7,15 @@ RUN apt-get update && \
     apt-get install -y wget && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_amd64.deb -O serposcope.deb && \
-    dpkg -i serposcope.deb && \
-    rm serposcope.deb
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_amd64.deb -O serposcope.deb; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        wget https://www.serposcope.com/downloads/${SERPOSCOPE_VER}/serposcope_${SERPOSCOPE_VER}_arm64.deb -O serposcope.deb; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    dpkg -i serposcope.deb && rm serposcope.deb || true
 
 COPY application.conf /usr/share/serposcope/
 COPY entrypoint.sh /entrypoint.sh
